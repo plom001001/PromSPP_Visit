@@ -1,13 +1,269 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PromSPP Visit</title>
+  <base target="_top">
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-  <h1>PromSPP Visit</h1>
-  <p>GitHub Pages ทำงานสำเร็จ!</p>
+  <div id="app" aria-live="polite"></div>
+  <div id="toast-region" class="toast-region" aria-live="polite"></div>
+
+  <template id="login-view">
+    <main class="auth-page">
+      <section class="auth-brand" aria-label="SPP Project introduction">
+        <div class="brand-mark">SP</div>
+        <span class="brand-label">SUPERPART</span>
+        <h1>งานขายที่ชัดเจน<br>เริ่มจากข้อมูลที่ไว้ใจได้</h1>
+        <p>เข้าสู่ SPP Project ด้วยบัญชีที่ผู้ดูแลระบบจัดเตรียมให้</p>
+        <div class="brand-orbs" aria-hidden="true"><i></i><i></i><i></i></div>
+      </section>
+      <section class="auth-panel">
+        <form id="login-form" class="auth-card">
+          <span class="eyebrow">SUPERPART • SPP PROJECT</span>
+          <h2>ยินดีต้อนรับ</h2>
+          <p class="muted">เข้าสู่ระบบด้วยบัญชีพนักงาน</p>
+          <label class="field"><span>Username</span><input name="username" autocomplete="username" maxlength="80" required autofocus></label>
+          <label class="field"><span>Password</span><span class="password-control"><input name="password" type="password" autocomplete="current-password" maxlength="256" required><button type="button" class="password-toggle" data-toggle="password">แสดง</button></span></label>
+          <div class="auth-error" data-error role="alert" hidden></div>
+          <button class="button button--primary button--wide" type="submit"><span data-label>เข้าสู่ระบบ</span><span class="spinner" data-spinner hidden></span></button>
+        </form>
+      </section>
+    </main>
+  </template>
+
+  <template id="password-view">
+    <main class="auth-page auth-page--compact">
+      <section class="auth-panel auth-panel--center">
+        <form id="password-form" class="auth-card">
+          <div class="icon-tile">🔐</div>
+          <span class="eyebrow">FIRST LOGIN</span>
+          <h2>ตั้งรหัสผ่านใหม่</h2>
+          <p class="muted">เพื่อความปลอดภัย คุณต้องเปลี่ยนรหัสผ่านก่อนเข้าใช้งานระบบ</p>
+          <label class="field"><span>รหัสผ่านใหม่</span><span class="password-control"><input name="newPassword" type="password" autocomplete="new-password" minlength="9" maxlength="256" required><button type="button" class="password-toggle" data-toggle="newPassword">แสดง</button></span></label>
+          <label class="field"><span>ยืนยันรหัสผ่านใหม่</span><span class="password-control"><input name="confirmPassword" type="password" autocomplete="new-password" minlength="9" maxlength="256" required><button type="button" class="password-toggle" data-toggle="confirmPassword">แสดง</button></span></label>
+          <div class="auth-error" data-error role="alert" hidden></div>
+          <button class="button button--primary button--wide" type="submit"><span data-label>บันทึกรหัสผ่านใหม่</span><span class="spinner" data-spinner hidden></span></button>
+        </form>
+      </section>
+    </main>
+  </template>
+
+  <template id="dashboard-view">
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-brand"><div class="brand-mark brand-mark--small">SP</div><div><strong>SPP Project</strong><small>SUPERPART</small></div></div>
+        <nav class="nav-list"><button class="is-active" type="button" data-route="dashboard">⌂ <span>Dashboard</span></button><button type="button" data-route="visits">⌖ <span>Visit</span></button><button type="button" data-route="report">▤ <span>Report</span></button><button type="button" data-route="database" data-database-view>▦ <span>Database</span></button><button type="button" data-route="users" data-user-view>♧ <span>User Management</span></button></nav>
+        <div class="sidebar-footer"><button class="profile-button" type="button" data-route="profile"><span class="avatar" data-avatar>SP</span><span><strong data-display-name></strong><small data-role></small></span></button><button class="logout-button" type="button" data-logout aria-label="ออกจากระบบ">↪</button></div>
+      </aside>
+      <div class="workspace">
+        <header class="topbar"><div><p class="eyebrow">SPP PROJECT</p><h1>Dashboard</h1></div><div class="topbar-actions"><button class="button button--ghost mobile-route" type="button" data-route="profile">โปรไฟล์</button><button class="button button--ghost mobile-route" type="button" data-route="users" data-user-view>ผู้ใช้งาน</button><button class="button button--ghost mobile-logout" type="button" data-logout>ออกจากระบบ</button></div></header>
+        <main class="page-content">
+          <section class="hero-card dashboard-hero"><div><span class="eyebrow">VISIT OVERVIEW</span><h2 data-welcome>ภาพรวมการเข้าพบลูกค้า</h2><p data-dashboard-scope>กำลังโหลดข้อมูล Visit…</p></div><div class="hero-mark">SP</div></section>
+          <section id="dashboard-kpis" class="dashboard-kpis"></section>
+          <section class="dashboard-grid"><article class="panel dashboard-card"><div class="dashboard-card-head"><div><span class="eyebrow">7 DAYS</span><h3>แผนและผลงาน 7 วัน</h3></div></div><div id="dashboard-series" class="dashboard-series"></div></article><article class="panel dashboard-card"><div class="dashboard-card-head"><div><span class="eyebrow">THIS MONTH</span><h3>สถานะ Visit</h3></div></div><div id="dashboard-statuses" class="dashboard-statuses"></div></article></section>
+          <section class="dashboard-grid"><article class="panel dashboard-card"><div class="dashboard-card-head"><div><span class="eyebrow">UPCOMING</span><h3>Visit ที่กำลังจะถึง</h3></div><button class="button button--ghost" type="button" data-route="visits">ดูทั้งหมด</button></div><div id="dashboard-upcoming" class="dashboard-visit-list"></div></article><article class="panel dashboard-card"><div class="dashboard-card-head"><div><span class="eyebrow">RECENT</span><h3>ความเคลื่อนไหวล่าสุด</h3></div><button class="button button--ghost" type="button" data-route="report">เปิด Report</button></div><div id="dashboard-recent" class="dashboard-visit-list"></div></article></section>
+        </main>
+      </div>
+    </div>
+  </template>
+
+  <template id="users-view">
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-brand"><div class="brand-mark brand-mark--small">SP</div><div><strong>SPP Project</strong><small>SUPERPART</small></div></div>
+        <nav class="nav-list"><button type="button" data-route="dashboard">⌂ <span>Dashboard</span></button><button type="button" data-route="visits">⌖ <span>Visit</span></button><button type="button" data-route="report">▤ <span>Report</span></button><button type="button" data-route="database" data-database-view>▦ <span>Database</span></button><button class="is-active" type="button" data-route="users" data-user-view>♧ <span>User Management</span></button></nav>
+        <div class="sidebar-footer"><button class="profile-button" type="button" data-route="profile"><span class="avatar" data-avatar>SP</span><span><strong data-display-name></strong><small data-role></small></span></button><button class="logout-button" type="button" data-logout aria-label="ออกจากระบบ">↪</button></div>
+      </aside>
+      <div class="workspace">
+        <header class="topbar"><div><p class="eyebrow">SPP PROJECT</p><h1>User Management</h1></div><div class="topbar-actions"><button class="button button--ghost" type="button" data-user-template>ดาวน์โหลด Template</button><button class="button button--ghost" type="button" data-user-export>Export ตาม Filter</button><label class="button button--primary file-button" data-user-import-label>Import CSV<input id="user-import-file" type="file" accept=".csv,text/csv" hidden></label><button class="button button--ghost mobile-route" type="button" data-route="profile">โปรไฟล์</button><button class="button button--ghost mobile-route" type="button" data-route="dashboard">Dashboard</button><button class="button button--ghost mobile-logout" type="button" data-logout>ออกจากระบบ</button></div></header>
+        <main class="page-content">
+          <section class="page-actions"><div><h2>ผู้ใช้งานและสิทธิ์</h2><p>จัดการบัญชี Role สถานะ รหัสผ่านชั่วคราว และ Permission ราย User</p></div><button class="button button--primary" type="button" data-user-action="new">+ เพิ่มผู้ใช้</button></section>
+          <section class="admin-user-layout">
+            <article class="panel table-panel admin-user-list">
+              <div class="toolbar"><input id="user-search" class="search" placeholder="ค้นหาชื่อหรือ Username" aria-label="ค้นหาผู้ใช้"><select id="user-status-filter" aria-label="กรองสถานะ"><option value="ALL">ทุกสถานะ</option><option value="ACTIVE">Active</option><option value="DISABLED">Disabled</option></select></div>
+              <div id="user-list-empty" class="empty-state" hidden>ไม่พบผู้ใช้ตามเงื่อนไข</div>
+              <div class="responsive-table"><table class="admin-user-table"><colgroup><col data-user-col="user"><col data-user-col="role"><col data-user-col="status"></colgroup><thead><tr><th data-user-column="user">ผู้ใช้งาน<span class="column-resize-handle" data-user-resize="user"></span></th><th data-user-column="role">Role<span class="column-resize-handle" data-user-resize="role"></span></th><th data-user-column="status">สถานะ<span class="column-resize-handle" data-user-resize="status"></span></th></tr></thead><tbody id="admin-user-rows"></tbody></table></div>
+            </article>
+            <aside class="panel admin-user-detail" data-user-detail aria-label="รายละเอียดผู้ใช้" hidden>
+              <form id="admin-user-form" novalidate><input type="hidden" name="userId"><input type="hidden" name="version">
+                <div class="panel-head"><div><span id="admin-form-mode" class="eyebrow">USER DETAIL</span><h3 id="admin-user-heading">เลือกผู้ใช้งาน</h3></div><div class="user-detail-head-actions"><span id="admin-user-status" class="status">—</span><button class="icon-button" type="button" data-user-action="close" aria-label="ปิดรายละเอียดผู้ใช้">×</button></div></div>
+                <div id="admin-form-error" class="auth-error" role="alert" hidden></div>
+                <label class="field"><span>Display name *</span><input name="displayName" maxlength="120" required></label>
+                <label class="field"><span>Username *</span><input name="username" maxlength="80" pattern="[a-z0-9._-]{3,80}" autocomplete="off" required></label>
+                <label class="field"><span>Role *</span><select name="roleCode" required><option value="ADMIN">Admin</option><option value="MANAGER">Manager</option><option value="SALES">Sales</option><option value="AUDITOR">Auditor</option></select></label>
+                <label id="create-password-field" class="field"><span>Temporary password *</span><span class="password-control"><input name="temporaryPassword" type="password" minlength="9" maxlength="256" autocomplete="new-password"><button type="button" class="password-toggle" data-toggle="temporaryPassword">แสดง</button></span></label>
+                <div id="edit-user-actions" hidden>
+                  <div class="admin-actions"><button id="admin-status-action" class="button button--ghost" type="button" data-user-action="toggle-status">Deactivate</button><button class="button button--ghost" type="button" data-user-action="show-reset">ตั้งรหัสชั่วคราวใหม่</button></div>
+                  <div id="password-reset-panel" class="password-reset-panel" hidden><label class="field"><span>รหัสผ่านชั่วคราวใหม่ *</span><span class="password-control"><input name="resetPassword" type="password" minlength="9" maxlength="256" autocomplete="new-password"><button type="button" class="password-toggle" data-toggle="resetPassword">แสดง</button></span></label><button class="button button--ghost button--wide" type="button" data-user-action="reset-password">บันทึกรหัสชั่วคราว</button></div>
+                </div>
+                <button id="admin-save-user" class="button button--primary button--wide" type="submit"><span data-form-label>สร้างผู้ใช้</span><span class="spinner" data-form-spinner hidden></span></button>
+                <fieldset id="user-permission-panel" class="permission-panel" hidden><legend>Permission overrides</legend><p>Inherit ใช้ค่าจาก Role ส่วน Allow/Deny เป็นข้อยกเว้นเฉพาะ User</p><div id="user-permission-options"></div><button class="button button--ghost button--wide" type="button" data-user-action="save-permissions">บันทึกสิทธิราย User</button></fieldset>
+                <small class="security-caption">ทุกคำสั่งตรวจ Session และสิทธิ์ ADMIN ซ้ำที่ Server รหัสผ่านและ Token จะไม่ถูกส่งกลับมาที่ Browser</small>
+              </form>
+            </aside>
+          </section>
+        </main>
+      </div>
+    </div>
+  </template>
+
+  <template id="user-import-preview-template">
+    <div class="modal-backdrop"><section class="panel import-preview-dialog"><div class="visit-editor-head"><div><span class="eyebrow">USER IMPORT</span><h3>ตรวจสอบผู้ใช้ก่อน Import</h3></div><button class="icon-button" type="button" data-user-import-close>×</button></div><div id="user-import-summary" class="report-summary"></div><p class="muted">ระบบใช้ Username เป็นหลัก: Username ใหม่ = CREATE, Username เดิม = UPDATE และจะไม่ Export รหัสผ่าน</p><div class="database-table-wrap import-preview-table-wrap"><table class="data-table"><thead><tr><th>แถว</th><th>ผล</th><th>Error</th><th>Username</th><th>Display name</th><th>Role</th><th>Status</th><th>Temporary password</th></tr></thead><tbody id="user-import-preview-body"></tbody></table></div><div class="import-preview-actions"><button class="button button--ghost" type="button" data-user-import-cancel>ยกเลิก</button><button class="button button--primary" type="button" data-user-import-commit>ยืนยัน Import</button></div></section></div>
+  </template>
+
+  <template id="profile-view">
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-brand"><div class="brand-mark brand-mark--small">SP</div><div><strong>SPP Project</strong><small>SUPERPART</small></div></div>
+        <nav class="nav-list"><button type="button" data-route="dashboard">⌂ <span>Dashboard</span></button><button type="button" data-route="visits">⌖ <span>Visit</span></button><button type="button" data-route="report">▤ <span>Report</span></button><button type="button" data-route="database" data-database-view>▦ <span>Database</span></button><button type="button" data-route="users" data-user-view>♧ <span>User Management</span></button></nav>
+        <div class="sidebar-footer"><button class="profile-button is-active" type="button" data-route="profile"><span class="avatar" data-avatar>SP</span><span><strong data-display-name></strong><small data-role></small></span></button><button class="logout-button" type="button" data-logout aria-label="ออกจากระบบ">↪</button></div>
+      </aside>
+      <div class="workspace">
+        <header class="topbar"><div><p class="eyebrow">SPP PROJECT</p><h1>My Profile</h1></div><div class="topbar-actions"><button class="button button--ghost mobile-route" type="button" data-route="dashboard">Dashboard</button><button class="button button--ghost mobile-route" type="button" data-route="users" data-user-view>ผู้ใช้งาน</button><button class="button button--ghost mobile-logout" type="button" data-logout>ออกจากระบบ</button></div></header>
+        <main class="page-content">
+          <section class="profile-layout">
+            <article class="panel profile-summary"><div class="profile-avatar" data-avatar>SP</div><span class="eyebrow">MY PROFILE</span><h2 data-display-name></h2><div class="profile-meta"><div><span>Username</span><strong data-profile-username></strong></div><div><span>Role</span><strong data-role></strong></div></div><p>ข้อมูลบัญชีเป็นแบบอ่านอย่างเดียว หากต้องการแก้ชื่อหรือ Role ให้ติดต่อผู้ดูแลระบบ</p></article>
+            <article class="panel profile-security"><div class="panel-head"><div><span class="eyebrow">SECURITY</span><h3>เปลี่ยนรหัสผ่าน</h3></div><div class="icon-tile">🔐</div></div>
+              <form id="profile-password-form" novalidate>
+                <div class="auth-error" data-error role="alert" hidden></div>
+                <label class="field"><span>รหัสผ่านปัจจุบัน</span><span class="password-control"><input name="currentPassword" type="password" autocomplete="current-password" maxlength="256" required><button type="button" class="password-toggle" data-toggle="currentPassword">แสดง</button></span></label>
+                <label class="field"><span>รหัสผ่านใหม่</span><span class="password-control"><input name="newPassword" type="password" autocomplete="new-password" minlength="9" maxlength="256" required><button type="button" class="password-toggle" data-toggle="newPassword">แสดง</button></span></label>
+                <label class="field"><span>ยืนยันรหัสผ่านใหม่</span><span class="password-control"><input name="confirmPassword" type="password" autocomplete="new-password" minlength="9" maxlength="256" required><button type="button" class="password-toggle" data-toggle="confirmPassword">แสดง</button></span></label>
+                <button class="button button--primary button--wide" type="submit"><span data-label>เปลี่ยนรหัสผ่าน</span><span class="spinner" data-spinner hidden></span></button>
+                <small class="security-caption">เมื่อเปลี่ยนสำเร็จ Session เดิมทั้งหมดจะถูกเพิกถอน และหน้านี้จะใช้ Session ใหม่โดยอัตโนมัติ</small>
+              </form>
+            </article>
+          </section>
+        </main>
+      </div>
+    </div>
+  </template>
+
+  <template id="database-view">
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-brand"><div class="brand-mark brand-mark--small">SP</div><div><strong>SPP Project</strong><small>SUPERPART</small></div></div>
+        <nav class="nav-list"><button type="button" data-route="dashboard">⌂ <span>Dashboard</span></button><button type="button" data-route="visits">⌖ <span>Visit</span></button><button type="button" data-route="report">▤ <span>Report</span></button><button class="is-active" type="button" data-route="database" data-database-view>▦ <span>Database</span></button><button type="button" data-route="users" data-user-view>♧ <span>User Management</span></button></nav>
+        <div class="sidebar-footer"><button class="profile-button" type="button" data-route="profile"><span class="avatar" data-avatar>SP</span><span><strong data-display-name></strong><small data-role></small></span></button><button class="logout-button" type="button" data-logout aria-label="ออกจากระบบ">↪</button></div>
+      </aside>
+      <div class="workspace">
+        <header class="topbar"><div><p class="eyebrow">SPP PROJECT</p><h1>Database</h1></div><div class="topbar-actions"><button class="button button--ghost" type="button" data-db-template>ดาวน์โหลด Template</button><button class="button button--ghost" type="button" data-db-export>Export ตาม Filter</button><label class="button button--primary file-button">Import CSV<input id="db-import-file" type="file" accept=".csv,text/csv" hidden></label></div></header>
+        <main class="page-content">
+          <section id="db-entity-tabs" class="database-tabs" role="tablist"></section>
+          <section class="page-actions"><div><h2 data-db-title>Branch</h2><p>จัดการข้อมูลหลัก พร้อม Import และ Export ตามตัวกรอง</p></div><button class="button button--primary" type="button" data-db-new>+ เพิ่มข้อมูล</button></section>
+          <section class="database-layout">
+            <article class="panel table-panel">
+              <div class="toolbar database-toolbar"><input id="db-search" class="search" placeholder="ค้นหาทุกคอลัมน์"><span class="muted">คลิกชื่อคอลัมน์เพื่อ Sort และกรองใต้หัวตาราง</span></div>
+              <div class="database-table-wrap database-records-scroll"><table class="data-table database-table"><colgroup id="db-table-cols"></colgroup><thead id="db-table-head"></thead><tbody id="db-table-body"></tbody></table></div>
+              <div class="database-pagination"><div class="database-display-controls"><label class="page-size-control">แถวต่อหน้า <select data-db-page-size aria-label="จำนวนแถวต่อหน้า"><option value="25">25</option><option value="50">50</option><option value="100">100</option><option value="300">300</option><option value="500">500</option><option value="1000">1000</option></select></label><label class="page-size-control">ความสูงแถว <select data-db-row-height aria-label="ความสูงของแถว"><option value="40">เล็ก</option><option value="52">ปกติ</option><option value="64">ใหญ่</option><option value="80">ใหญ่มาก</option></select></label></div><span data-db-total>ทั้งหมด 0 รายการ</span><button class="button button--ghost" type="button" data-db-prev>ก่อนหน้า</button><span data-db-page>หน้า 1</span><button class="button button--ghost" type="button" data-db-next>ถัดไป</button></div>
+            </article>
+            <article class="panel database-form-panel" data-db-detail hidden>
+              <form id="database-form"><div class="database-form-head"><div><span class="eyebrow">DATABASE DETAIL</span><h3 data-db-form-title>เพิ่มข้อมูล</h3></div><button class="icon-button" type="button" data-db-close aria-label="ปิดแบบฟอร์ม">×</button></div><div class="auth-error" data-error hidden></div><div id="db-fields" class="database-fields"></div><button class="button button--primary button--wide" type="submit"><span data-label>บันทึกข้อมูล</span><span class="spinner" data-spinner hidden></span></button><button class="button button--ghost button--wide" type="button" data-db-delete hidden>ลบข้อมูล</button></form>
+            </article>
+          </section>
+        </main>
+      </div>
+    </div>
+  </template>
+
+  <template id="import-preview-template">
+    <div class="modal-backdrop"><section class="panel import-preview-dialog"><div class="visit-editor-head"><div><span class="eyebrow">IMPORT STAGING</span><h3>ตรวจสอบก่อน Upload</h3></div><button class="icon-button" type="button" data-import-close>×</button></div><div class="import-options"><label>โหมด<select data-import-mode><option value="UPSERT">Upsert</option><option value="CREATE_ONLY">Create only</option><option value="UPDATE_ONLY">Update only</option></select></label><label>ช่องว่าง<select data-import-blank><option value="PRESERVE">คงค่าเดิม</option><option value="CLEAR">ล้างค่าเดิม</option></select></label><label>เมื่อพบ Error<select data-import-error-policy><option value="ALL_OR_NONE">ยกเลิกทั้งไฟล์</option><option value="VALID_ONLY">บันทึกเฉพาะแถวที่ผ่าน</option></select></label><button class="button button--ghost" type="button" data-import-preview>ตรวจสอบใหม่</button></div><div id="import-preview-summary" class="report-summary"></div><div class="database-table-wrap import-preview-table-wrap"><table class="data-table"><thead id="import-preview-head"></thead><tbody id="import-preview-body"></tbody></table></div><div class="import-preview-actions"><button class="button button--ghost" type="button" data-import-cancel>ยกเลิก</button><button class="button button--primary" type="button" data-import-commit disabled>ยืนยัน Import</button></div></section></div>
+  </template>
+
+  <template id="visits-view">
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-brand"><div class="brand-mark brand-mark--small">SP</div><div><strong>SPP Project</strong><small>SUPERPART</small></div></div>
+        <nav class="nav-list"><button type="button" data-route="dashboard">⌂ <span>Dashboard</span></button><button class="is-active" type="button" data-route="visits">⌖ <span>Visit</span></button><button type="button" data-route="report">▤ <span>Report</span></button><button type="button" data-route="database" data-database-view>▦ <span>Database</span></button><button type="button" data-route="users" data-user-view>♧ <span>User Management</span></button></nav>
+        <div class="sidebar-footer"><button class="profile-button" type="button" data-route="profile"><span class="avatar" data-avatar>SP</span><span><strong data-display-name></strong><small data-role></small></span></button><button class="logout-button" type="button" data-logout aria-label="ออกจากระบบ">↪</button></div>
+      </aside>
+      <div class="workspace">
+        <header class="topbar"><div><p class="eyebrow">SPP PROJECT</p><h1>Visit</h1></div><div class="topbar-actions"><button class="button button--ghost" type="button" data-visit-export>Export CSV</button><button class="button button--primary" type="button" data-visit-new>+ สร้าง Visit</button></div></header>
+        <main class="page-content">
+          <section class="page-actions"><div><h2>แผนและผลการเข้าพบลูกค้า</h2><p>วางแผน Check-in/out ด้วย GPS บันทึกผล และส่งให้ Manager Review</p></div></section>
+          <section class="panel table-panel visit-list-panel">
+            <div class="toolbar visit-toolbar"><input id="visit-search" class="search" placeholder="ค้นหา Visit หรือลูกค้า"><select id="visit-status-filter"><option value="CURRENT">งานปัจจุบัน/รอบถัดไป</option><option value="">ทุกสถานะและประวัติ</option></select><select id="visit-employee-filter"><option value="">พนักงานทั้งหมด</option></select><input id="visit-date-from" type="date" aria-label="วันที่เริ่ม"><input id="visit-date-to" type="date" aria-label="วันที่สิ้นสุด"></div>
+            <div class="database-table-wrap"><table class="data-table visit-table"><thead><tr><th>Visit</th><th>ลูกค้า</th><th>พนักงาน</th><th>วันและเวลา</th><th>ประเภท</th><th>สถานะ</th></tr></thead><tbody id="visit-table-body"></tbody></table></div>
+            <div class="database-pagination"><button class="button button--ghost" type="button" data-visit-prev>ก่อนหน้า</button><span data-visit-page>หน้า 1</span><button class="button button--ghost" type="button" data-visit-next>ถัดไป</button></div>
+          </section>
+          <section id="visit-detail-host" class="visit-detail-host" hidden></section>
+        </main>
+      </div>
+    </div>
+  </template>
+
+  <template id="visit-plans-view">
+    <div class="app-shell"><aside class="sidebar"><div class="sidebar-brand"><div class="brand-mark brand-mark--small">SP</div><div><strong>SPP Project</strong><small>SUPERPART</small></div></div><nav class="nav-list"><button type="button" data-route="dashboard">⌂ <span>Dashboard</span></button><button class="is-active" type="button" data-route="visitPlans" data-visit-plan-view>▣ <span>Visit Plan</span></button><button type="button" data-route="visits">⌖ <span>Visit</span></button><button type="button" data-route="report">▤ <span>Report</span></button><button type="button" data-route="database" data-database-view>▦ <span>Database</span></button><button type="button" data-route="users" data-user-view>♧ <span>User Management</span></button></nav><div class="sidebar-footer"><button class="profile-button" type="button" data-route="profile"><span class="avatar" data-avatar>SP</span><span><strong data-display-name></strong><small data-role></small></span></button><button class="logout-button" type="button" data-logout>↪</button></div></aside>
+      <div class="workspace"><header class="topbar"><div><p class="eyebrow">SPP PROJECT</p><h1>Visit Plan</h1></div><div class="topbar-actions"><button class="button button--ghost" type="button" data-plan-template>Template</button><button class="button button--ghost" type="button" data-plan-export>Export</button><label class="button button--primary file-button" data-plan-import-label>Import CSV<input id="plan-import-file" type="file" accept=".csv,text/csv" hidden></label></div></header><main class="page-content"><section class="page-actions"><div><h2>แผนและการมอบหมาย Visit</h2><p>1 แผนกำหนดพนักงานและวัตถุประสงค์หลักครั้งเดียว แล้วเพิ่มลูกค้าได้หลายราย</p></div><button class="button button--primary" type="button" data-plan-new>+ สร้าง Visit Plan</button></section><section class="database-layout"><article class="panel table-panel"><div class="toolbar"><input id="plan-search" class="search" placeholder="ค้นหาแผน ลูกค้า หรือพนักงาน"></div><div class="database-table-wrap"><table class="data-table"><thead id="plan-table-head"></thead><tbody id="plan-table-body"></tbody></table></div><div class="database-pagination"><button class="button button--ghost" type="button" data-plan-prev>ก่อนหน้า</button><span data-plan-page>หน้า 1</span><button class="button button--ghost" type="button" data-plan-next>ถัดไป</button></div></article><article class="panel database-form-panel visit-plan-document" data-plan-detail hidden><form id="visit-plan-form"><div class="visit-editor-head"><div><span class="eyebrow">PLAN DOCUMENT</span><h3 data-plan-form-title>สร้าง Visit Plan</h3></div><button class="icon-button" type="button" data-plan-close aria-label="ปิด Visit Plan">×</button></div><div class="auth-error" data-error hidden></div><div id="plan-fields" class="database-fields"></div><section class="plan-customer-section"><div class="plan-customer-heading"><div><span class="eyebrow">CUSTOMERS IN PLAN</span><h3>ลูกค้าในแผน <span class="plan-customer-count" data-plan-customer-count>0</span></h3></div></div><div class="plan-customer-search"><input id="plan-customer-search" class="search" type="search" autocomplete="off" placeholder="ค้นหารหัสชั่วคราว รหัสลูกค้า ชื่อลูกค้า หรือเบอร์โทร"><span data-plan-customer-search-status></span></div><div class="plan-customer-results" data-plan-customer-results hidden></div><div class="plan-customer-lines" data-plan-customer-lines></div></section><div class="plan-form-actions"><button class="button button--primary button--wide" type="submit"><span data-label>บันทึกทั้งแผน</span><span class="spinner" data-spinner hidden></span></button><button class="button button--ghost button--wide" type="button" data-plan-delete hidden>ลบแผน</button></div></form></article></section></main></div>
+    </div>
+  </template>
+
+  <template id="visit-editor-template">
+    <article class="panel visit-editor">
+      <div class="visit-editor-head"><div><span class="eyebrow">VISIT DETAIL</span><h3 data-visit-editor-title>สร้าง Visit</h3></div><button class="icon-button" type="button" data-visit-close aria-label="ปิด">×</button></div>
+      <div class="auth-error" data-error hidden></div>
+      <form id="visit-form" class="visit-form-grid">
+        <label class="field field--wide"><span>Visit Plan (เว้นว่างสำหรับ Unplanned)</span><select name="VisitPlanId"></select></label>
+        <label class="field visit-customer-picker"><span>ลูกค้า *</span><input id="visit-customer-search" type="search" placeholder="พิมพ์รหัสหรือชื่อลูกค้า" autocomplete="off"><input name="CustomerId" type="hidden"><small data-visit-customer-status></small><div class="plan-customer-results" data-visit-customer-results hidden></div></label>
+        <label class="field"><span>พนักงานผู้เข้าพบ *</span><select name="EmployeeUserId" required></select></label>
+        <label class="field"><span>ประเภท *</span><select name="VisitType"><option value="PLANNED">PLANNED</option><option value="UNPLANNED">UNPLANNED</option></select></label>
+        <label class="field"><span>วัตถุประสงค์ *</span><select name="PurposeId" required></select></label>
+        <label class="field"><span>วันและเวลาเริ่ม *</span><div class="datetime-now-control"><input name="PlannedStartAt" type="datetime-local" required><button class="button button--ghost datetime-now-button" type="button" data-visit-start-now>ใช้เวลาปัจจุบัน</button></div></label>
+        <label class="field"><span>เวลาสิ้นสุดโดยประมาณ</span><input name="PlannedEndAt" type="datetime-local"></label>
+        <label class="field field--wide"><span>หมายเหตุ</span><textarea name="Notes" maxlength="2000"></textarea></label>
+        <div class="visit-editor-actions field--wide"><button class="button button--primary" type="submit"><span data-label>บันทึก Visit</span><span class="spinner" data-spinner hidden></span></button><button class="button button--ghost" type="button" data-visit-cancel hidden>ยกเลิก Visit</button></div>
+      </form>
+      <section class="visit-runtime" data-visit-runtime hidden></section>
+    </article>
+  </template>
+
+  <template id="report-view">
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-brand"><div class="brand-mark brand-mark--small">SP</div><div><strong>SPP Project</strong><small>SUPERPART</small></div></div>
+        <nav class="nav-list"><button type="button" data-route="dashboard">⌂ <span>Dashboard</span></button><button type="button" data-route="visits">⌖ <span>Visit</span></button><button class="is-active" type="button" data-route="report">▤ <span>Report</span></button><button type="button" data-route="database" data-database-view>▦ <span>Database</span></button><button type="button" data-route="users" data-user-view>♧ <span>User Management</span></button></nav>
+        <div class="sidebar-footer"><button class="profile-button" type="button" data-route="profile"><span class="avatar" data-avatar>SP</span><span><strong data-display-name></strong><small data-role></small></span></button><button class="logout-button" type="button" data-logout aria-label="ออกจากระบบ">↪</button></div>
+      </aside>
+      <div class="workspace">
+        <header class="topbar"><div><p class="eyebrow">SPP PROJECT</p><h1>Visit Report</h1></div><div class="topbar-actions"><button class="button button--primary" type="button" data-report-export>Export ตาม Filter</button></div></header>
+        <main class="page-content">
+          <section class="page-actions"><div><h2>รายงานการเข้าพบลูกค้า</h2><p>กรองข้อมูลตามช่วงเวลา พนักงาน ลูกค้า สถานะ และผลการเข้าพบ</p></div></section>
+          <section class="panel report-filter-panel"><div class="report-filters"><label><span>ค้นหา</span><input id="report-search" placeholder="Visit, ลูกค้า หรือพนักงาน"></label><label><span>ตั้งแต่วันที่</span><input id="report-date-from" type="date"></label><label><span>ถึงวันที่</span><input id="report-date-to" type="date"></label><label><span>สถานะ</span><select id="report-status"><option value="">ทุกสถานะ</option></select></label><label><span>ประเภท</span><select id="report-type"><option value="">ทุกประเภท</option><option value="PLANNED">PLANNED</option><option value="UNPLANNED">UNPLANNED</option></select></label><label><span>สาขา</span><select id="report-branch"><option value="">ทุกสาขา</option></select></label><label><span>พนักงาน</span><select id="report-employee"><option value="">ทั้งหมด</option></select></label><label><span>ลูกค้า</span><select id="report-customer"><option value="">ทั้งหมด</option></select></label><label><span>วัตถุประสงค์</span><select id="report-purpose"><option value="">ทั้งหมด</option></select></label><label><span>ผลการเข้าพบ</span><select id="report-outcome"><option value="">ทั้งหมด</option></select></label></div></section>
+          <section id="report-summary" class="report-summary"></section>
+          <section class="panel table-panel"><div class="database-table-wrap"><table class="data-table report-table"><thead><tr><th>Visit</th><th>ลูกค้า</th><th>พนักงาน</th><th>วันนัดหมาย</th><th>สถานะ</th><th>วัตถุประสงค์</th><th>ผลการเข้าพบ</th><th>Check-in</th><th>Check-out</th></tr></thead><tbody id="report-table-body"></tbody></table></div><div class="database-pagination"><button class="button button--ghost" type="button" data-report-prev>ก่อนหน้า</button><span data-report-page>หน้า 1</span><button class="button button--ghost" type="button" data-report-next>ถัดไป</button></div></section>
+        </main>
+      </div>
+    </div>
+  </template>
+
+  <template id="loading-view">
+    <main class="splash"><div class="brand-mark">SP</div><span class="spinner spinner--large"></span><p>กำลังตรวจสอบ Session…</p></main>
+  </template>
+
+  <template id="system-maintenance-view">
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-brand"><div class="brand-mark brand-mark--small">SP</div><div><strong>SPP Project</strong><small>SUPERPART</small></div></div>
+        <nav class="nav-list"><button type="button" data-route="dashboard">⌂ <span>Dashboard</span></button><button type="button" data-route="visits">⌖ <span>Visit</span></button><button type="button" data-route="report">▤ <span>Report</span></button><button type="button" data-route="database" data-database-view>▦ <span>Database</span></button><button type="button" data-route="users" data-user-view>♧ <span>User Management</span></button></nav>
+        <div class="sidebar-footer"><button class="profile-button" type="button" data-route="profile"><span class="avatar" data-avatar>SP</span><span><strong data-display-name></strong><small data-role></small></span></button><button class="logout-button" type="button" data-logout aria-label="ออกจากระบบ">↪</button></div>
+      </aside>
+      <div class="workspace">
+        <header class="topbar"><div><p class="eyebrow">SYSTEM OWNER</p><h1>พื้นที่ / ล้างข้อมูล</h1></div><button class="button button--ghost" type="button" data-storage-refresh>รีเฟรช</button></header>
+        <main class="page-content maintenance-page">
+          <section id="storage-summary" class="maintenance-summary"></section>
+          <section class="panel storage-usage-panel"><div class="panel-head"><div><p class="eyebrow">GOOGLE SHEETS STORAGE</p><h3>พื้นที่ฐานข้อมูลระบบ</h3></div><strong data-storage-ratio>—</strong></div><div class="storage-progress"><span data-storage-progress></span></div><p class="muted" data-storage-caption>กำลังอ่านข้อมูล…</p></section>
+          <section class="panel table-panel storage-sheet-panel"><div class="panel-head storage-panel-head"><div><p class="eyebrow">WORKSHEETS</p><h3>การใช้พื้นที่รายชีต</h3></div></div><div class="database-table-wrap"><table class="data-table storage-table"><thead><tr><th>ชีต</th><th>แถวที่จัดสรร</th><th>คอลัมน์</th><th>ช่องที่จัดสรร</th><th>แถวข้อมูล</th><th>ช่วงข้อมูลใช้งาน</th><th>% ของเพดาน</th></tr></thead><tbody id="storage-sheet-body"><tr><td colspan="7">กำลังโหลด…</td></tr></tbody></table></div></section>
+          <section class="panel maintenance-unlock" data-maintenance-lock><div class="maintenance-lock-icon">🔐</div><h3>ยืนยันรหัสผ่านเพื่อจัดการข้อมูล</h3><p>อนุญาตเฉพาะบัญชี System Owner และปลดล็อกครั้งละ 10 นาที</p><form id="maintenance-unlock-form"><label class="field"><span>รหัสผ่านปัจจุบัน</span><input name="password" type="password" autocomplete="current-password" required></label><button class="button button--primary" type="submit"><span data-label>ปลดล็อก</span><span class="spinner" data-spinner hidden></span></button></form></section>
+          <section class="maintenance-tools" data-maintenance-tools hidden>
+            <section class="panel compact-panel"><div><p class="eyebrow">SAFE OPTIMIZE</p><h3>คืนพื้นที่ว่าง</h3><p>ตัดเฉพาะแถวและคอลัมน์ว่างส่วนเกิน ไม่ลบข้อมูลที่มีค่า</p></div><button class="button button--ghost" type="button" data-storage-compact>คืนพื้นที่ว่าง</button></section>
+            <section class="panel cleanup-panel"><div class="cleanup-heading"><div><p class="eyebrow">DANGER ZONE</p><h3>ล้างข้อมูลระบบ</h3></div><span class="status status--disabled">ลบถาวร</span></div><div class="cleanup-warning"><strong>คำสั่งนี้ย้อนกลับไม่ได้</strong><span>โปรดสำรอง Google Sheet ก่อนดำเนินการ ระบบจะคงหัวตารางและบัญชี System Owner</span></div><div id="cleanup-groups" class="cleanup-groups"></div><div class="cleanup-actions"><button class="button button--ghost" type="button" data-cleanup-preview>ตรวจสอบก่อนลบ</button></div><div class="cleanup-preview" data-cleanup-preview-panel hidden><h4>รายการที่จะลบ</h4><div id="cleanup-preview-summary"></div><label class="field"><span>พิมพ์ DELETE เพื่อยืนยัน</span><input data-cleanup-confirm autocomplete="off" placeholder="DELETE"></label><button class="button button--danger" type="button" data-cleanup-execute>ล้างข้อมูลถาวร</button></div></section>
+          </section>
+        </main>
+      </div>
+    </div>
+  </template>
+
+  <script src="./scripts.js"></script>
 </body>
 </html>
