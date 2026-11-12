@@ -3,6 +3,16 @@
 <head>
   <base target="_top">
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f47f8f">
+  <meta name="description" content="SPP Project สำหรับบริหารงานขายและการเข้าพบลูกค้า">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="SPP Project">
+  <title>SPP Project</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
@@ -27,6 +37,7 @@
           <label class="field"><span>Password</span><span class="password-control"><input name="password" type="password" autocomplete="current-password" maxlength="256" required><button type="button" class="password-toggle" data-toggle="password">แสดง</button></span></label>
           <div class="auth-error" data-error role="alert" hidden></div>
           <button class="button button--primary button--wide" type="submit"><span data-label>เข้าสู่ระบบ</span><span class="spinner" data-spinner hidden></span></button>
+          <a class="pwa-install-link" href="./install.html">ติดตั้ง SPP Project บนมือถือ</a>
         </form>
       </section>
     </main>
@@ -265,5 +276,12 @@
   </template>
 
   <script src="./scripts.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(function () {});
+      });
+    }
+  </script>
 </body>
 </html>

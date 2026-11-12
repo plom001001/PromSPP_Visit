@@ -1,0 +1,26 @@
+{
+  "id": "./",
+  "name": "SPP Project",
+  "short_name": "SPP Project",
+  "description": "ระบบบริหารงานขายและการเข้าพบลูกค้าของ SUPERPART",
+  "lang": "th",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fff9f6",
+  "theme_color": "#f47f8f",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

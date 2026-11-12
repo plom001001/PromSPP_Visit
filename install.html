@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f47f8f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="SPP Project">
+  <title>ติดตั้ง SPP Project</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="install-page">
+    <div class="install-shell">
+      <header class="install-header">
+        <div class="brand-mark" aria-hidden="true">SP</div>
+        <div><h1>ติดตั้ง SPP Project</h1><p>SUPERPART • ใช้งานแบบแอปบน Android และ iPhone</p></div>
+      </header>
+      <section class="install-grid">
+        <article class="panel install-qr">
+          <img src="./icons/install-qr.png" width="320" height="320" alt="QR Code เปิดเว็บไซต์ SPP Project">
+          <strong>สแกนเพื่อเปิดเว็บไซต์</strong>
+          <span class="install-url">https://plom001001.github.io/PromSPP_Visit/</span>
+        </article>
+        <article class="panel install-guide">
+          <h2>วิธีเพิ่มแอปลงหน้าจอหลัก</h2>
+          <div class="install-options">
+            <section class="install-option">
+              <h3>Android · Chrome</h3>
+              <ol><li>เปิดลิงก์ด้วย Chrome</li><li>แตะเมนู ⋮ มุมขวาบน</li><li>เลือก “ติดตั้งแอป” หรือ “เพิ่มลงในหน้าจอหลัก”</li><li>แตะ “ติดตั้ง” เพื่อยืนยัน</li></ol>
+            </section>
+            <section class="install-option">
+              <h3>iPhone · Safari</h3>
+              <ol><li>เปิดลิงก์ด้วย Safari</li><li>แตะปุ่ม Share ⎙ ด้านล่าง</li><li>เลือก “Add to Home Screen”</li><li>แตะ “Add” มุมขวาบน</li></ol>
+            </section>
+          </div>
+          <div class="install-actions">
+            <button id="install-button" class="button button--primary" type="button" hidden>ติดตั้งแอปตอนนี้</button>
+            <a class="button button--ghost" href="./">กลับไปหน้าเข้าสู่ระบบ</a>
+          </div>
+          <p id="install-status" class="install-status" hidden></p>
+          <p class="install-note">บน iPhone ต้องเปิดด้วย Safari จึงจะเห็นคำสั่ง Add to Home Screen การติดตั้งไม่เปลี่ยนสิทธิ์การใช้งานและยังต้องเข้าสู่ระบบตามปกติ</p>
+        </article>
+      </section>
+    </div>
+  </main>
+  <script>
+    (function () {
+      var installPrompt = null;
+      var button = document.getElementById('install-button');
+      var status = document.getElementById('install-status');
+      window.addEventListener('beforeinstallprompt', function (event) {
+        event.preventDefault();
+        installPrompt = event;
+        button.hidden = false;
+      });
+      button.addEventListener('click', async function () {
+        if (!installPrompt) return;
+        installPrompt.prompt();
+        var choice = await installPrompt.userChoice;
+        installPrompt = null;
+        button.hidden = true;
+        if (choice.outcome === 'accepted') {
+          status.textContent = 'ส่งคำขอติดตั้งแล้ว';
+          status.hidden = false;
+        }
+      });
+      window.addEventListener('appinstalled', function () {
+        button.hidden = true;
+        status.textContent = 'ติดตั้ง SPP Project เรียบร้อยแล้ว';
+        status.hidden = false;
+      });
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(function () {});
+        });
+      }
+    }());
+  </script>
+</body>
+</html>

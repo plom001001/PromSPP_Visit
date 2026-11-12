@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">SPP Project by SUPERPART</title>
+  <defs>
+    <linearGradient id="background" x1="48" y1="30" x2="470" y2="486" gradientUnits="userSpaceOnUse"><stop stop-color="#fff0e5"/><stop offset="0.52" stop-color="#ffe2e7"/><stop offset="1" stop-color="#e8e1ff"/></linearGradient>
+    <linearGradient id="mark" x1="148" y1="128" x2="370" y2="388" gradientUnits="userSpaceOnUse"><stop stop-color="#f47f8f"/><stop offset="1" stop-color="#ffae9b"/></linearGradient>
+    <filter id="shadow" x="90" y="90" width="332" height="348" filterUnits="userSpaceOnUse"><feDropShadow dx="0" dy="20" stdDeviation="18" flood-color="#df6579" flood-opacity="0.28"/></filter>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#background)"/>
+  <circle cx="420" cy="102" r="54" fill="#ffffff" opacity="0.55"/>
+  <circle cx="88" cy="430" r="72" fill="#fff3cf" opacity="0.75"/>
+  <g filter="url(#shadow)"><rect x="128" y="116" width="256" height="256" rx="82" fill="url(#mark)"/></g>
+  <text x="256" y="284" fill="#ffffff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="96" font-weight="900" letter-spacing="5" text-anchor="middle">SP</text>
+  <text x="256" y="422" fill="#302e3a" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="800" letter-spacing="6" text-anchor="middle">SUPERPART</text>
+</svg>
