@@ -1,6 +1,8 @@
 (function () {
   'use strict';
   const STORAGE_KEY = 'spp.session.v1';
+  const API_ENDPOINT = 'https://promspp-api.plom001001.workers.dev/';
+  const API_TIMEOUT_MS = 120000;
   const USER_PERMISSION_CODES = ['USER_VIEW', 'USER_CREATE', 'USER_EDIT', 'USER_STATUS', 'USER_PASSWORD_RESET'];
   const DATABASE_PERMISSION_CODES=(function(){const codes=[];['BRANCH','TARGET','CUSTOMER_LEVEL','SALES_PROFILE','CUSTOMER','CATEGORY','BRAND','COMPETITOR','PROMOTION'].forEach(function(entity){['VIEW','CREATE','EDIT','DELETE','IMPORT','EXPORT'].forEach(function(action){codes.push('DATABASE_'+entity+'_'+action);});});return codes;})();
   const FEATURE_PERMISSION_CODES=['VISIT_PLAN_VIEW','VISIT_PLAN_CREATE','VISIT_PLAN_EDIT','VISIT_PLAN_DELETE','VISIT_PLAN_ASSIGN','VISIT_PLAN_IMPORT','VISIT_PLAN_EXPORT','VISIT_VIEW','VISIT_CREATE_UNPLANNED','VISIT_CHECK_IN','VISIT_CHECK_OUT','VISIT_EDIT_RESULT','VISIT_REVIEW','VISIT_APPROVE','DASHBOARD_VIEW','REPORT_VIEW','REPORT_EXPORT'];
@@ -11,16 +13,31 @@
   function readDatabaseRowHeight(){try{const value=Number(localStorage.getItem('spp.database.rowHeight'));return[40,52,64,80].indexOf(value)!==-1?value:52;}catch(error){return 52;}}
   const app = document.getElementById('app');
 
-  function serverCall(action, payload) {
-    return new Promise(function (resolve, reject) {
-      google.script.run
-        .withSuccessHandler(function (response) {
-          if (response && response.ok) resolve(response.data);
-          else reject(response && response.error ? response.error : { code: 'SERVER_ERROR', message: 'ระบบไม่สามารถดำเนินการได้' });
-        })
-        .withFailureHandler(function () { reject({ code: 'NETWORK_ERROR', message: 'ไม่สามารถติดต่อ Server ได้ กรุณาลองใหม่' }); })
-        .apiCall(action, payload || {});
-    });
+  async function serverCall(action, payload) {
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(function () { controller.abort(); }, API_TIMEOUT_MS);
+    try {
+      const httpResponse = await fetch(API_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: action, payload: payload || {} }),
+        cache: 'no-store',
+        credentials: 'omit',
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer',
+        signal: controller.signal
+      });
+      let response;
+      try { response = await httpResponse.json(); }
+      catch (ignored) { throw { code: 'NETWORK_ERROR', message: 'Server ส่งข้อมูลตอบกลับไม่ถูกต้อง' }; }
+      if (response && response.ok) return response.data;
+      throw response && response.error ? response.error : { code: 'SERVER_ERROR', message: 'ระบบไม่สามารถดำเนินการได้' };
+    } catch (error) {
+      if (error && error.code) throw error;
+      throw { code: 'NETWORK_ERROR', message: error && error.name === 'AbortError' ? 'Server ใช้เวลาตอบกลับนานเกินกำหนด' : 'ไม่สามารถติดต่อ Server ได้ กรุณาลองใหม่' };
+    } finally {
+      window.clearTimeout(timeoutId);
+    }
   }
 
   function render(templateId) {
